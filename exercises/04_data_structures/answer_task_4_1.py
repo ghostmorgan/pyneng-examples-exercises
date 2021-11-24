@@ -16,5 +16,6 @@
 """
 
 nat = "ip nat inside source list ACL interface FastEthernet0/1 overload"
-new_nat = nat.replace("Fast", "Gigabit")
-print(new_nat)
+
+nat_gig = nat.replace("Fast", "Gigabit")
+print(nat_gig)
