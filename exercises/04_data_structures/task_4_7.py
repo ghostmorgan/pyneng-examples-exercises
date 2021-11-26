@@ -16,3 +16,7 @@
 """
 
 mac = "AAAA:BBBB:CCCC"
+
+mac_hex = mac.replace(":", "")
+mac_int = int(mac_hex, 16)
+print(bin(mac_int)[2:])
