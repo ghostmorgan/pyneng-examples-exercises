@@ -50,3 +50,10 @@ london_co = {
         "routing": True,
     },
 }
+
+device = input("Введите имя устройства: ")
+# keys = tuple(london_co[device].keys()) формирует кортеж ключей строкового значения, не совсем подходит для решения, так как будут видны ключи как строки, а не просто строка из ключей
+keys = ", ".join(london_co[device].keys()) # строка, сформированная из ключей словаря
+param = input(f"Введите имя параметра ({keys}): ")
+
+print(london_co[device][param])
