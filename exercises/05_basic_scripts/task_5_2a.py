@@ -44,8 +44,53 @@ bin_ip = "00001010000000010000000111000011"
 
 А адрес сети будет первых 28 символов из bin_ip + 0000 (4 потому что всего
 в адресе может быть 32 бита, а 32 - 28 = 4)
-00001010000000010000000111000000
+00001010 00000001 00000001 11000000
+00001010 00000001 00000001 110000110000
 
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+ip_template = """
+  Network:
+  {net_oct_1:<10}{net_oct_2:<10}{net_oct_3:<10}{net_oct_4:<10}
+  {net_oct_1:08b}  {net_oct_2:08b}  {net_oct_3:08b}  {net_oct_4:08b}
+"""
+
+mask_template = """
+  Mask:
+  /{mask}
+  {bin_mask_1:<10}{bin_mask_2:<10}{bin_mask_3:<10}{bin_mask_4:<10}
+  {bin_mask_1:08b}  {bin_mask_2:08b}  {bin_mask_3:08b}  {bin_mask_4:08b}
+"""
+
+ip_address = input("Введите адрес сети в формате: 10.1.1.0/24: ") # запрос у пользователя сети в формате 10.1.1.0/24
+
+network, mask = list(ip_address.split('/')[0].split('.'))  , int(ip_address.split('/')[1]) # выделение из полученной строки отдельного списка строк адреса сети и целочисленной маски
+
+# получение ip-адреса двоичной строкой 
+bin_net_oct_1 = format(int(network[0]), '#010b')[2:]
+bin_net_oct_2 = format(int(network[1]), '#010b')[2:]
+bin_net_oct_3 = format(int(network[2]), '#010b')[2:]
+bin_net_oct_4 = format(int(network[3]), '#010b')[2:]
+
+bin_ip = bin_net_oct_1 + bin_net_oct_2 + bin_net_oct_3 + bin_net_oct_4 # получение двоичной строки ip-адреса
+bin_mask = "1" * mask + "0" * (32 - mask) # получение двоичной строки маски из десятичного значения
+bin_network = bin_ip[:mask] + '0' * (32 - mask) # получение двоичной строки адреса сети
+
+ 
+# преобразование двоичной строки адреса сети в 4 десятичных октета
+net_oct_1 = int(bin_network[0:8], 2)
+net_oct_2 = int(bin_network[8:16], 2)
+net_oct_3 = int(bin_network[16:24], 2)
+net_oct_4 = int(bin_network[24:], 2)
+
+
+# преобразование двоичной строки маски в 4 десятичных октета
+bin_mask_1 = int(bin_mask[0:8], 2)
+bin_mask_2 = int(bin_mask[8:16], 2)
+bin_mask_3 = int(bin_mask[16:24], 2)
+bin_mask_4 = int(bin_mask[24:], 2)
+
+print(ip_template.format(net_oct_1=net_oct_1, net_oct_2=net_oct_2, net_oct_3=net_oct_3, net_oct_4=net_oct_4))
+print(mask_template.format(mask=mask, bin_mask_1=bin_mask_1, bin_mask_2=bin_mask_2, bin_mask_3=bin_mask_3, bin_mask_4=bin_mask_4))
