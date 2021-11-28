@@ -30,3 +30,36 @@ Out[1]: '11111111111111111111111111110000'
 
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 """
+ip_template = """
+  Network:
+  {net_oct_1:<10}{net_oct_2:<10}{net_oct_3:<10}{net_oct_4:<10}
+  {net_oct_1:08b}  {net_oct_2:08b}  {net_oct_3:08b}  {net_oct_4:08b}
+"""
+
+mask_template = """
+  Mask:
+  /{mask}
+  {bin_mask_1:<10}{bin_mask_2:<10}{bin_mask_3:<10}{bin_mask_4:<10}
+  {bin_mask_1:08b}  {bin_mask_2:08b}  {bin_mask_3:08b}  {bin_mask_4:08b}
+"""
+
+ip_net = input("Введите IP-сеть в формате: 10.1.1.0/24: ") # запрос у пользователя сети в формате 10.1.1.0/24
+
+network, mask = list(ip_net.split('/')[0].split('.'))  , int(ip_net.split('/')[1]) # выделение из полученной строки отдельного списка строк адреса сети и целочисленной маски
+
+# преобразование списка строк адреса сети в целочисленные значения
+net_oct_1 = int(network[0])
+net_oct_2 = int(network[1])
+net_oct_3 = int(network[2])
+net_oct_4 = int(network[3])
+
+bin_mask = "1" * mask + "0" * (32 - mask) # получение двоичной строки маски из десятичного значения
+
+# преобразование двоичной строки маски в 4 десятичных октета
+bin_mask_1 = int(bin_mask[0:8], 2)
+bin_mask_2 = int(bin_mask[8:16], 2)
+bin_mask_3 = int(bin_mask[16:24], 2)
+bin_mask_4 = int(bin_mask[24:], 2)
+
+print(ip_template.format(net_oct_1=net_oct_1, net_oct_2=net_oct_2, net_oct_3=net_oct_3, net_oct_4=net_oct_4))
+print(mask_template.format(mask=mask, bin_mask_1=bin_mask_1, bin_mask_2=bin_mask_2, bin_mask_3=bin_mask_3, bin_mask_4=bin_mask_4))
