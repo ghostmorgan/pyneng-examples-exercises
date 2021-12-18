@@ -16,4 +16,16 @@
 
 """
 
+from sys import argv
+
+main_config = argv[1]
+result_config = argv[2]
+
 ignore = ["duplex", "alias", "configuration"]
+
+with open(main_config) as src, open(result_config, 'w') as dst:
+    for line in src:
+        words = line.split()
+        intersection = set(ignore).intersection(words)
+        if not line.startswith('!') and not intersection:
+            dst.write(line)
