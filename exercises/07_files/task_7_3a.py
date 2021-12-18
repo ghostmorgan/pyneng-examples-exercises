@@ -40,3 +40,20 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+mac_template = """
+{0:<10}{1:<20}{2}
+"""
+
+mac_list = []
+
+with open('CAM_table.txt') as cam_table:
+    for line in cam_table:
+        mac_line = line.split()
+        if mac_line and mac_line[0].isdigit():
+            vlan, mac, intf = mac_line[0], mac_line[1], mac_line[3]  
+            mac_list.append([int(vlan), mac, intf])       
+    mac_list.sort()
+    
+    for line in mac_list:
+        print(mac_template.format(line[0], line[1], line[2]).lstrip().rstrip())
