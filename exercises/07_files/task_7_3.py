@@ -20,3 +20,13 @@
 Ограничение: Все задания надо выполнять используя только пройденные темы.
 
 """
+
+mac_template = """
+{0:<10}{1:<20}{2}
+"""
+
+with open('CAM_table.txt') as cam_table:
+    for line in cam_table:
+        mac_line = line.split()
+        if mac_line and mac_line[0].isdigit():
+            print(mac_template.format(mac_line[0], mac_line[1], mac_line[3]).lstrip().rstrip())
