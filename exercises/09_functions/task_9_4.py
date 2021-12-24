@@ -47,7 +47,6 @@
 
 ignore = ["duplex", "alias", "configuration"]
 
-
 def ignore_command(command, ignore):
     """
     Функция проверяет содержится ли в команде слово из списка ignore.
@@ -64,3 +63,21 @@ def ignore_command(command, ignore):
         if word in command:
             ignore_status = True
     return ignore_status
+
+
+def convert_config_to_dict(config_filename):
+    """
+    Функция обрабатывает конфигурационный файл коммутатора и возвращает словарь
+    """
+    result_dict = {}
+    
+    with open(config_filename) as f:
+        for line in f:
+            if not (line.startswith('!') or line.isspace()) and not ignore_command(line, ignore):
+                if not line.startswith(" "):
+                    key = line.strip()
+                    result_dict[key] = []
+                else:
+                    result_dict[key].append(line.strip())
+                
+    return result_dict
