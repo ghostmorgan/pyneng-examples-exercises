@@ -74,9 +74,47 @@
 
 """
 
+from pprint import pprint
+
+from draw_network_graph import draw_topology
+from task_11_2 import create_network_map
+
 infiles = [
     "sh_cdp_n_sw1.txt",
     "sh_cdp_n_r1.txt",
     "sh_cdp_n_r2.txt",
     "sh_cdp_n_r3.txt",
 ]
+
+
+def unique_network_map(topology_dict):
+    """
+    Функция которая из двух (дублирующих) соединений в словаре 
+    будет оставлять только одно, для корректного рисования схемы
+
+    На вход принимает один параметр topology_dict,
+    который ожидает как аргумент словарь.
+
+    На выходе получаем словарь, который описывает соединения между
+    устройствами без дублирующих соединений
+    """
+    dublicate_list = []
+
+    for key, value in topology_dict.items():
+        if((value, key) in topology_dict.items()):
+            dublicate_list.append((key, value))
+
+    for value in dublicate_list[len(dublicate_list) // 2:]:
+        del(topology_dict[value[0]]) 
+    
+    return topology_dict
+
+
+if __name__ == "__main__":
+    """
+    Получаем словарь с кортежами из предыдущего задания
+    Рисуем топологию для имеющегося словаря - имеются дубликаты соединений    
+    """
+    topology = create_network_map(infiles)
+    unique_topology = unique_network_map(topology)
+    draw_topology(unique_topology)
