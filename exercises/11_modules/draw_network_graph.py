@@ -2,6 +2,9 @@
 # Based on http://matthiaseisen.com/articles/graphviz/
 
 import sys
+import os
+
+os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 
 try:
     import graphviz as gv
