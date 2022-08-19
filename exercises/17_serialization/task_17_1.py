@@ -33,34 +33,33 @@ sw2_dhcp_snooping.txt, sw3_dhcp_snooping.txt.
 """
 
 import csv
-from fileinput import filename
-from pprint import pprint
 import re
-
-list_of_filenames = ["sw1_dhcp_snooping.txt", "sw2_dhcp_snooping.txt", "sw3_dhcp_snooping.txt"]
 
 def write_dhcp_snooping_to_csv(filenames, output):
     
     regex_filename = (r"^[^_]*")                # регулярка для получения имени устройства из имени файла
-    regex_output = (r"^([0-9a-fA-F]:?){12}")    # регулярка для получения необходимых данных из вывода команд
-
-    list_filenames = []
-    headers = ["switch", "mac", "ip","vlan", "interface"]
+    regex_output = (r"(?P<mac>\S+) +(?P<ip>\S+) +\d+ +\S+ +(?P<vlan>\d+) +(?P<interface>\S+)")    # регулярка для получения необходимых данных из вывода команд
     
-    # получение списка имён устройств из имён исходных файлов
-    for filename in filenames:
-        m = re.search(regex_filename, filename)
-        if m:
-            list_filenames.append(m.group(0))
+    dev_dict = {}
+    res_list = []
 
     #получение данных из исходных данных
     for file in filenames:
         with open(file) as f:
             for line in f:
+                #выделяем имя устройства из имени входного файла
+                m = re.search(regex_filename, file)
+                if m:
+                    dev_dict['switch'] = m.group(0)
+                
+                #обновляем словарь с помощью данных, которые получили из файла
                 res = re.search(regex_output, line)
-
                 if res:
-                    print(file + "   ---   " + res.group(0))
+                    dev_dict.update(res.groupdict())
+                    print(dev_dict)
+                    res_list.append(dev_dict)
+                    print("-" * 10)
+                    print(res_list)
     
     # запись полученных данных в файл csv
     with open(output, "w") as f:
@@ -68,4 +67,5 @@ def write_dhcp_snooping_to_csv(filenames, output):
         ###
 
 if __name__ == "__main__":
+    list_of_filenames = ["sw1_dhcp_snooping.txt", "sw2_dhcp_snooping.txt", "sw3_dhcp_snooping.txt"]
     write_dhcp_snooping_to_csv(list_of_filenames, "result_dhcp_snooping.csv")
