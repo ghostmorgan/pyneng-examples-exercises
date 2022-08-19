@@ -44,8 +44,40 @@
 """
 
 import glob
+import re
+import csv
 
 sh_version_files = glob.glob("sh_vers*")
-# print(sh_version_files)
-
 headers = ["hostname", "ios", "image", "uptime"]
+
+
+def parse_sh_version(output):
+    
+    # парсим вывод команды show version и получаем из нее необходимые данные
+    regex = [(r"(?<=Version )(?P<version>.*)(?=,)"), (r"\"(?P<image>.*)\""), (r"(?<=uptime is )(?P<uptime>.*)")]
+    list_of_data = []
+
+    for reg in regex:
+        ios_data = re.search(reg, output)
+        list_of_data.append(ios_data.group(1))
+
+    return(tuple(list_of_data))
+
+
+def write_inventory_to_csv(data_filenames, csv_filename):
+    
+    with open(csv_filename, "w", newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(headers)                                    # записываем в итоговый csv файл заголовок
+
+        # открываем и считываем содержимое каждого файла, затем передаем результат как аргумент на вход функции parse_show_version
+        for filename in data_filenames:
+            with open(filename) as output_file:
+                device_name = re.search("sh_version_(.+).txt", filename).group(1)
+                content = output_file.read()
+                res = parse_sh_version(content)
+                writer.writerow((device_name,) + res)
+                   
+
+if __name__ == "__main__":
+    write_inventory_to_csv(sh_version_files, "routers_inventory.csv")
