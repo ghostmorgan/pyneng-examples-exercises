@@ -37,34 +37,34 @@ import re
 
 def write_dhcp_snooping_to_csv(filenames, output):
     
-    regex_filename = (r"^[^_]*")                # регулярка для получения имени устройства из имени файла
-    regex_output = (r"(?P<mac>\S+) +(?P<ip>\S+) +\d+ +\S+ +(?P<vlan>\d+) +(?P<interface>\S+)")    # регулярка для получения необходимых данных из вывода команд
+    regex_filename = (r"^[^_]*")                                                                   # регулярка для получения имени устройства из имени файла
+    regex_command = (r"(?P<mac>\S+) +(?P<ip>\S+) +\d+ +\S+ +(?P<vlan>\d+) +(?P<interface>\S+)")    # регулярка для получения необходимых данных из команды show dhcp snooping binding
     
-    dev_dict = {}
-    res_list = []
+    device_dict = {}
+    result_list = []
 
-    #получение данных из исходных данных
-    for file in filenames:
-        with open(file) as f:
-            for line in f:
-                #выделяем имя устройства из имени входного файла
-                m = re.search(regex_filename, file)
-                if m:
-                    dev_dict['switch'] = m.group(0)
-                
-                #обновляем словарь с помощью данных, которые получили из файла
-                res = re.search(regex_output, line)
-                if res:
-                    dev_dict.update(res.groupdict())
-                    print(dev_dict)
-                    res_list.append(dev_dict)
-                    print("-" * 10)
-                    print(res_list)
-    
+    for file in filenames: 
+        # находим с помощью регулярки имя устройства в имени входного файла
+        name_of_device = re.search(regex_filename, file)
+        if name_of_device:
+            device_dict['switch'] = name_of_device.group(0)
+
+        # открываем файл с данными и обновляем список с помощью полученных данных
+        with open(file) as dhcp_output:
+            for line in dhcp_output:              
+                result = re.search(regex_command, line)
+                if result:
+                    device_dict.update(result.groupdict())
+                    result_list.append(device_dict.copy())
+
     # запись полученных данных в файл csv
-    with open(output, "w") as f:
-        print()
-        ###
+    with open(output, "w", newline='') as csv_file:
+        fieldnames = list(result_list[0].keys())
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        
+        writer.writeheader()
+        for row in result_list:
+            writer.writerow(row)
 
 if __name__ == "__main__":
     list_of_filenames = ["sw1_dhcp_snooping.txt", "sw2_dhcp_snooping.txt", "sw3_dhcp_snooping.txt"]
